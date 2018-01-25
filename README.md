@@ -53,7 +53,7 @@ $ curl -X POST "https://graph.facebook.com/v2.6/me/subscribed_apps?access_token=
 ### Getting the Hasura project
 
 ```sh
-$ hasura quickstart akash1997/fb-exchange-rate-bot
+$ hasura quickstart akashiiitv/fb-exchange-rate-bot
 $ cd fb-exchange-rate-bot
 # Add FACEBOOK_VERIFY_TOKEN to secrets. This is any pass phrase that you decide on, keep a note on what you are choosing as your verify token, we will be using it later while setting things up for your bot on the facebook developer page.
 $ hasura secrets update bot.fb_verify_token.key <YOUR-VERIFY-TOKEN>
