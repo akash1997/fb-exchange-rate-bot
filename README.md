@@ -155,3 +155,6 @@ This feature can be accessed by the command **ctrcode**. Eg:
 crycode Bitcoin Cash
 ```
 Note: The Hasura Data API is used to retrieve the symbol for this functionality.
+
+### Commands List
+The command list can be accessed via the command **help**.
