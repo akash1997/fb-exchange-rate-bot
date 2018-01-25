@@ -1,8 +1,14 @@
 # Building a Facebook Messenger Bot on Hasura
 
-This tutorial helps you in setting up the facebook messenger bot which offers several commands to retrieve currency exchange rates.
+This tutorial helps you in setting up the facebook messenger bot which offers several commands to retrieve currency exchange rates and the various functionalities offered by the bot.
 
 For the chat bot to function we'll need a server that will receive the messages sent by the Facebook users, process this message and respond back to the user. To send messages back to the server we will use the graph API provided by Facebook. For the Facebook servers to talk to our server, the endpoint URL of our server should be accessible to the Facebook server and should use a secure HTTPS URL. For this reason, running our server locally will not work and instead we need to host our server online. In this tutorial, we are going to deploy our server on Hasura which automatically provides SSL-enabled domains.
+
+## Contents
+
+* [Pre-requisites](#pre-requisites)
+* [Getting the bot running](getting-the-bot-running)
+* [Bot Functionalities](bot-functionalities)
 
 ## Pre-requisites
 
@@ -112,9 +118,9 @@ Next, open up your facebook page.
 * You will now see that the **+ Add button** has now changed to **Get Started**. Hovering over this will show you a list with an item named **Test this button**. Click on it to start chatting with your bot.
 * Send a message to your bot.
 
-## Functionalities
+## Bot Functionalities
 
-This bot offers four different functionalties, two of them are for getting the exchange rates for cryptocurrencies and fiat currencies, while the other two are for retrieving the currency symbols.
+This bot offers four different functionalties, two of them are for getting the exchange rates for cryptocurrencies and fiat currencies, while the other two are for retrieving the currency symbols. Also note that all the commands are case-insensitive(The capital/small letters or their combination does not affect the command functionality).
 
 ### Getting Cryptocurrency exchange rates
 This feature can be accessed by the command **crypto**. Eg:
@@ -125,4 +131,27 @@ or
 ```sh
 crypto BCH INR
 ```
-Note: 
+Note:
+* The API used for this functionality is: [CryptoCompare](https://www.cryptocompare.com/api/)
+* The first command **has** to be a cryptocurrency symbol but the second command can be either a fiat currency symbol or a cryptocurrency symbol.
+
+### Getting Fiat exchange rates
+This feature can be accessed by the command **curr**. Eg:
+```sh
+curr inr usd
+```
+Note: The API usedfor this functionality is: [Fixer](http://http://fixer.io/).
+
+### Getting Fiat Currency Symbol
+This feature can be accessed by the command **ctrcode**. Eg:
+```sh
+ctrcode India
+```
+Note: The API usedfor this functionality is: [Rest Countries](https://restcountries.eu/).
+
+### Getting Cryptocurrency Symbol
+This feature can be accessed by the command **ctrcode**. Eg:
+```sh
+crycode Bitcoin Cash
+```
+Note: The Hasura Data API is used to retrieve the symbol for this functionality.
