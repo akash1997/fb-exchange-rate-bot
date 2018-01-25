@@ -122,6 +122,8 @@ Next, open up your facebook page.
 
 This bot offers four different functionalties, two of them are for getting the exchange rates for cryptocurrencies and fiat currencies, while the other two are for retrieving the currency symbols. Also note that all the commands are case-insensitive(The capital/small letters or their combination does not affect the command functionality).
 
+You can see the Bot in action [here](https://github.com/akash1997/fb-exchange-rate-bot/blob/master/Bot_Demo.mp4?raw=true)
+
 ### Getting Cryptocurrency exchange rates
 This feature can be accessed by the command **crypto**. Eg:
 ```sh
