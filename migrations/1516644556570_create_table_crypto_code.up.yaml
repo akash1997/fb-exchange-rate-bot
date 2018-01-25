@@ -1,0 +1,7 @@
+- args:
+    sql: CREATE TABLE "crypto_code"("currency_name" text NOT NULL, "currency_code"
+      text NOT NULL, PRIMARY KEY ("currency_name","currency_code") )
+  type: run_sql
+- args:
+    name: crypto_code
+  type: add_existing_table_or_view

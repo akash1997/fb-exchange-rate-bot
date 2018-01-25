@@ -1,0 +1,13 @@
+- args:
+    role: anonymous
+    table: crypto_code
+  type: drop_select_permission
+- args:
+    permission:
+      columns:
+      - currency_code
+      - currency_name
+      filter: {}
+    role: anonymous
+    table: crypto_code
+  type: create_select_permission

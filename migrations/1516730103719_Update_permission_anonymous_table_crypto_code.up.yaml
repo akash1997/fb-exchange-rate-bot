@@ -1,0 +1,7 @@
+- args:
+    permission:
+      columns: []
+      filter: {}
+    role: anonymous
+    table: crypto_code
+  type: create_select_permission

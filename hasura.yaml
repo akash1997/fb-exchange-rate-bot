@@ -1,0 +1,6 @@
+description: A facebook messenger bot deployed on Hasura to provide the exchange rates of two different currencies including cryptocurrencies.
+keywords: cryptocurrency, currency, exchange, rate, bot, facebook, nodejs, express, node, javascript, messenger, messenger bot,
+  chatbot
+media: {}
+name: fb-exchange-rate-bot
+platformVersion: v0.15.3
