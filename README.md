@@ -7,8 +7,8 @@ For the chat bot to function we'll need a server that will receive the messages 
 ## Contents
 
 * [Pre-requisites](#pre-requisites)
-* [Getting the bot running](getting-the-bot-running)
-* [Bot Functionalities](bot-functionalities)
+* [Getting the bot running](#getting-the-bot-running)
+* [Bot Functionalities](#bot-functionalities)
 
 ## Pre-requisites
 
