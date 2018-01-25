@@ -1,6 +1,6 @@
-# Building a Facebook Messenger Bot on Hasura
+# The Messenger Exchange Rate Bot on Hasura
 
-This tutorial helps you in setting up the facebook messenger bot which offers several commands to retrieve currency exchange rates and the various functionalities offered by the bot.
+This tutorial helps you in setting up the messenger exchange rate bot which offers functionalities to retrieve currency exchange rates by the bot.
 
 For the chat bot to function we'll need a server that will receive the messages sent by the Facebook users, process this message and respond back to the user. To send messages back to the server we will use the graph API provided by Facebook. For the Facebook servers to talk to our server, the endpoint URL of our server should be accessible to the Facebook server and should use a secure HTTPS URL. For this reason, running our server locally will not work and instead we need to host our server online. In this tutorial, we are going to deploy our server on Hasura which automatically provides SSL-enabled domains.
 
