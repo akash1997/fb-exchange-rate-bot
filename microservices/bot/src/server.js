@@ -16,9 +16,10 @@ app.use(bodyParser.urlencoded({extended: false}));
 let FACEBOOK_VERIFY_TOKEN = process.env.FACEBOOK_VERIFY_TOKEN;
 let FACEBOOK_PAGE_ACCESS_TOKEN = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
 let FACEBOOK_SEND_MESSAGE_URL = 'https://graph.facebook.com/v2.6/me/messages?access_token=' + FACEBOOK_PAGE_ACCESS_TOKEN;
+let CLUSTER_NAME = 'furnished70';	//rename it to your cluster's name
 
 app.get('/', function (req, res) {
-    res.send("Hey there! You have reached the Bot's very own home. To see it in action, head over to https://www.messenger.com/t/exchangeRateBot now!");
+    res.send("Hey there! You have reached the Bot's very own home at "+CLUSTER_NAME+". To see it in action, head over to https://www.messenger.com/t/exchangeRateBot now!");
 });
 
 app.get('/webhook/', function(req, res) {
@@ -39,10 +40,8 @@ app.post('/webhook/', function(req, res) {
               var senderId = messagingObject.sender.id;
               if (messagingObject.message) {
                 if (!messagingObject.message.is_echo) {
-                  //Assuming that everything sent to this bot is a movie name.
                   var senderText = messagingObject.message.text;
-                  //getMovieDetails(senderId, movieName);
-				  processText(senderId, senderText);
+                  processText(senderId, senderText);
                 }
               } else if (messagingObject.postback) {
                 console.log('Received Postback message from ' + senderId);
@@ -110,18 +109,17 @@ function processText(senderId, messageText) {
 	}
 	var arr = messageText.split(" ");
 	arr[0] = arr[0].toUpperCase();
-	 if(arr[0] === "CRYPTO") {
-		 cryptoRateInfo(senderId, arr); //https://www.cryptocompare.com/api/
+	 if(arr[0] === "C2O") {
+		 cryptoRateInfo(senderId, arr, false); //https://www.cryptocompare.com/api/
+	 } else if(arr[0] === "F2C") {
+		 cryptoRateInfo(senderId, arr, true); //https://www.cryptocompare.com/api/
 	 } else if(arr[0] === "CURR") {
-		 currRateInfo(senderId, arr); //https://api.fixer.io/
+		 currRateInfo(senderId, arr); //https://free.currencyconverterapi.com/
 	 } else if(arr[0] === "CTRCODE") {
 		 getCountryCode(senderId, arr); //https://restcountries.eu/
 	 } else if(arr[0] === "CRYCODE") {
-		 getCryptoCode(senderId, arr);	//Hasura Data API
-	 } /*else if(arr[0] === "add") {
-		 console.log('Add function called '+messageText);
-		 addCryptoDetails(senderId, arr);
-	 } */else {
+		 getCryptoCode(senderId, arr);	//Hasura Database query
+	 } else {
 		 sendMessageToUser(senderId, 'Invalid command. Type help to see the list of commands or try again.');
 	 }
 }
@@ -129,15 +127,16 @@ function processText(senderId, messageText) {
 function sendHelpMenu(senderId) {
 	showTypingIndicatorToUser(senderId, false);
 	var message = 'Functions currently supported:\n';
-	message += '1. crypto <Cryptocurrency_Code> <Conversion_Currency_Code>. Eg: crypto BTC INR or crypto ETH BCH\n';
-	message += '2. curr <From_Currency_Code> <To_Currency_Code>. Eg: curr INR USD\n';
-	message += '3. ctrcode <Country _Name>. Eg: ctrcode India\n';
-	message += '4. crycode <Cryptocurrency name>. Eg. crycode ripple\n';
-	message += '5. help. To get this list of course ;)';
+	message += '1. c2o <Cryptocurrency_Code> <Fiat_Code or Cryptocurrency_Code> <value(optional)>. Eg: c2o BTC INR 0.02 or c2o ETH BCH\n';
+	message += '2. f2c <Fiat_Code> <Cryptocurrency_Code> <value(optional)>. Eg: f2c INR BCD 2000\n';
+	message += '3. curr <From_Currency_Code> <To_Currency_Code> <value(optional)>. Eg: curr INR USD 20000\n';
+	message += '4. ctrcode <Country _Name>. Eg: ctrcode India\n';
+	message += '5. crycode <Cryptocurrency name>. Eg. crycode ripple\n';
+	message += '6. help. To get this list of course ;)';
 	sendMessageToUser(senderId, message);
 }
 
-function cryptoRateInfo(senderId, arr) {
+function cryptoRateInfo(senderId, arr, isRev) {
 	showTypingIndicatorToUser(senderId, true);
 	if(arr[1] === undefined || arr[2] === undefined) {
 		sendMessageToUser(senderId, "Invalid format of request. Please type help to get the correct form of request.");
@@ -145,6 +144,15 @@ function cryptoRateInfo(senderId, arr) {
 	}
 	arr[1] = arr[1].toUpperCase();
 	arr[2] = arr[2].toUpperCase();
+	if(isRev) {
+		var temp = arr[1];
+		arr[1] = arr[2];
+		arr[2] = temp;
+	}
+	var val = 1;
+	if(arr.length === 4) {
+		val = arr[3];
+	}
 	var message = 'The price of ';
 	var url = 'https://min-api.cryptocompare.com/data/pricemultifull?fsyms='+arr[1]+'&tsyms='+arr[2];
 	
@@ -159,9 +167,49 @@ function cryptoRateInfo(senderId, arr) {
 					return;
 				}
 				var fromSym = response['DISPLAY'][arr[1]][arr[2]].FROMSYMBOL;
-				var toPrice = response['DISPLAY'][arr[1]][arr[2]].PRICE;
-				message += '1'+fromSym+' = '+ toPrice;
+				var toSym = response['DISPLAY'][arr[1]][arr[2]].TOSYMBOL;
+				var toPrice = response['RAW'][arr[1]][arr[2]].PRICE;
+				if(isRev) {
+					message += toSym + ' ' + val + ' = ' + fromSym + ' ' + (val/toPrice);
+				} else {
+					message += fromSym + ' ' + val + ' = ' + toSym + ' ' + (val*toPrice);
+				}
 				sendMessageToUser(senderId, message);
+			} else{
+				sendMessageToUser(senderId, "Some error occurred processing your request. Please recheck the command or try again later.");
+			}
+		}
+	}
+	priceReq.open('GET', url, true);
+	priceReq.send();
+}
+
+function currRateInfo(senderId, arr) {
+	showTypingIndicatorToUser(senderId, true);
+	if(arr[1] === undefined || arr[2] === undefined) {
+		showTypingIndicatorToUser(senderId, false);
+		sendMessageToUser(senderId, "Invalid format of request. Please type help to get the correct form of request.");
+		return;
+	}
+	arr[1] = arr[1].toUpperCase();
+	arr[2] = arr[2].toUpperCase();
+	var val = 1;
+	if(arr.length === 4) {
+		val = arr[3];
+	}
+	var message = 'The price of ';
+	var url = 'https://free.currencyconverterapi.com/api/v5/convert?q=' + arr[1] + '_' + arr[2] + '&compact=ultra';
+	
+	var priceReq= new XMLHttpRequest();
+	priceReq.onreadystatechange= function(){
+		if (priceReq.readyState === XMLHttpRequest.DONE){
+			showTypingIndicatorToUser(senderId, false);
+			if(priceReq.status=== 200){
+				var response = JSON.parse(priceReq.responseText);
+				message += arr[1] + ' ' + val + '= ' + (response[arr[1] + '_' + arr[2]]*val) + ' ' + arr[2];
+				sendMessageToUser(senderId, message);
+			} else if(priceReq.status === 403) {
+				sendMessageToUser(senderId, 'Sorry, the free requests per hour has been exceeded. The curr function will be back within an hour.');
 			} else{
 				sendMessageToUser(senderId, "Some error occurred processing your request. Please recheck the command or try again later.");
 			}
@@ -207,48 +255,6 @@ function getCountryCode(senderId, arr) {
 	priceReq.send();
 }
 
-/*function addCryptoDetails(senderId, arr) {
-	var addRequest= new XMLHttpRequest();
-	addRequest.onreadystatechange= function(){
-		if (addRequest.readyState === XMLHttpRequest.DONE){
-			if(addRequest.status=== 200){
-				var data = JSON.parse(addRequest.responseText).Data;
-				var jsonData = JSON.stringify(data);
-				var sendText = '{"type": "bulk","args": [{"type": "insert","args": {"table": "crypto_code","objects": [';
-				JSON.parse(jsonData, (key, value) => {
-					if(key !== "Id" && key !== "Url" && key !== "ImageUrl" && key !== "Name" && key !== "Symbol" && key !== "CoinName" && key !== "FullName" && key !== "Algorithm" && key !== "ProofType" && key !== "FullyPremined" && key !== "TotalCoinSupply" && key !== "PreMinedValue" && key !== "TotalCoinsFreeFloat" && key !== "SortOrder" && key !== "Sponsored" && key !== "Data" && key !== "") {
-						sendText += '{"currency_name": "'+data[key].CoinName+'","currency_code": "'+data[key].Symbol+'"},';
-					}
-				});
-				sendText += '{"currency_name": "delete_this","currency_code": "BUL"}]}}]}';
-				var addDetails= new XMLHttpRequest();
-				addDetails.onreadystatechange= function(){
-					if (addDetails.readyState === XMLHttpRequest.DONE){
-						if(addDetails.status=== 200){
-							sendMessageToUser(senderId, 'Added all to database');
-						} else{
-							sendMessageToUser(senderId, 'Some Error Occurred.');
-						}
-					}
-				}
-
-				//make the request
-				addDetails.open('POST', 'https://data.furnished70.hasura-app.io/v1/query', true);
-				addDetails.setRequestHeader('Content-Type', 'application/json');
-				addDetails.setRequestHeader('Authorization', 'Bearer <ADMIN_TOKEN_HERE>');
-				addDetails.send(sendText);
-			}
-			else{
-				console.log(addDetails.status+" Response "+addDetails.responseText);
-			}
-		}
-	}
-
-	//make the request
-	addRequest.open('GET', 'https://min-api.cryptocompare.com/data/all/coinlist', true);
-	addRequest.send();
-}*/
-
 function getCryptoCode(senderId, arr) {
 	showTypingIndicatorToUser(senderId, true);
 	if(arr[1] === undefined) {
@@ -275,7 +281,7 @@ function getCryptoCode(senderId, arr) {
 		}
 	}
 	//make the request
-	getCode.open('POST', 'https://data.furnished70.hasura-app.io/v1/query', true);
+	getCode.open('POST', 'https://data.'+CLUSTER_NAME+'.hasura-app.io/v1/query', true);
 	getCode.setRequestHeader('Content-Type', 'application/json');
 	getCode.send(JSON.stringify({
 		type:"select",
@@ -290,36 +296,6 @@ function getCryptoCode(senderId, arr) {
 		}
 	}));
 	
-}
-
-function currRateInfo(senderId, arr) {
-	showTypingIndicatorToUser(senderId, true);
-	if(arr[1] === undefined || arr[2] === undefined) {
-		showTypingIndicatorToUser(senderId, false);
-		sendMessageToUser(senderId, "Invalid format of request. Please type help to get the correct form of request.");
-		return;
-	}
-	arr[1] = arr[1].toUpperCase();
-	arr[2] = arr[2].toUpperCase();
-	var message = 'The price of ';
-	var url = 'https://api.fixer.io/latest?base='+arr[1]+'&symbols='+arr[2];
-	
-	var priceReq= new XMLHttpRequest();
-	priceReq.onreadystatechange= function(){
-		if (priceReq.readyState === XMLHttpRequest.DONE){
-			showTypingIndicatorToUser(senderId, false);
-			if(priceReq.status=== 200){
-				var response = JSON.parse(priceReq.responseText);
-				var toPrice = response['rates'][arr[2]];
-				message += '1 '+arr[1]+' = '+ toPrice + ' '+arr[2];
-				sendMessageToUser(senderId, message);
-			} else{
-				sendMessageToUser(senderId, "Some error occurred processing your request. Please recheck the command or try again later.");
-			}
-		}
-	}
-	priceReq.open('GET', url, true);
-	priceReq.send();
 }
 
 app.listen(8080, function () {

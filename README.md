@@ -120,43 +120,57 @@ Next, open up your facebook page.
 
 ## Bot Functionalities
 
-This bot offers four different functionalties, two of them are for getting the exchange rates for cryptocurrencies and fiat currencies, while the other two are for retrieving the currency symbols. Also note that all the commands are case-insensitive(The capital/small letters or their combination does not affect the command functionality).
+This bot offers four different functionalities, two of them are for getting the exchange rates for cryptocurrencies and fiat currencies, while the other two are for retrieving the currency symbols. Also note that all the commands are case-insensitive(The capital/small letters or their combination does not affect the command functionality).
 
-You can see the Bot in action [here](https://github.com/akash1997/fb-exchange-rate-bot/blob/master/Bot_Demo.mp4).
-
-### Getting Cryptocurrency exchange rates
-This feature can be accessed by the command **crypto**. Eg:
+### Getting Exchange Rate of a Cryptocurrency with another Fiat/Crypto Currency
+This feature can be accessed by the command **c2o**. Eg:
 ```sh
-crypto btc usd
+c2o btc usd 0.1
 ```
 or
 ```sh
-crypto BCH INR
+c2o BCH INR
 ```
 Note:
-* The API used for this functionality is: [CryptoCompare](https://www.cryptocompare.com/api/)
-* The first command **has** to be a cryptocurrency symbol but the second command can be either a fiat currency symbol or a cryptocurrency symbol.
+* The API used for this functionality is: [CryptoCompare](https://www.cryptocompare.com/api/).
+* The value part is optional after the two symbols. The default conversion value taken is 1.
+
+### Getting Exchange Rate of a Fiat Currency with another Cryptocurrency
+This feature can be accessed by the command **f2c**. Eg:
+```sh
+f2c inr btc 103250
+```
+or
+```sh
+f2c pen bcd
+```
+Note:
+* The API used for this functionality is: [CryptoCompare](https://www.cryptocompare.com/api/).
+* The value part is optional after the two symbols. The default conversion value taken is 1.
 
 ### Getting Fiat exchange rates
 This feature can be accessed by the command **curr**. Eg:
 ```sh
-curr inr usd
+curr inr usd 500
 ```
-Note: The API usedfor this functionality is: [Fixer](http://http://fixer.io/).
+Note: 
+* The API used for this functionality is: [The Free Currency Converter API](https://free.currencyconverterapi.com/).
+* The value part is optional after the two symbols. The default conversion value taken is 1.
+* There is a limit of 100 requests/hour by the API. So, you may sometimes have to try later depending on the request traffic.
 
 ### Getting Fiat Currency Symbol
 This feature can be accessed by the command **ctrcode**. Eg:
 ```sh
 ctrcode India
 ```
-Note: The API usedfor this functionality is: [Rest Countries](https://restcountries.eu/).
+Note: The API used for this functionality is: [Rest Countries](https://restcountries.eu/).
 
 ### Getting Cryptocurrency Symbol
 This feature can be accessed by the command **ctrcode**. Eg:
 ```sh
 crycode Bitcoin Cash
 ```
-Note: The Hasura Data API is used to retrieve the symbol for this functionality.
+Note: The Hasura Database is queried to retrieve the symbol for this functionality.
 
 ### Commands List
 The command list can be accessed via the command **help**.
