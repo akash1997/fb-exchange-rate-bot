@@ -120,7 +120,7 @@ Next, open up your facebook page.
 
 ## Bot Functionalities
 
-This bot offers four different functionalities, two of them are for getting the exchange rates for cryptocurrencies and fiat currencies, while the other two are for retrieving the currency symbols. Also note that all the commands are case-insensitive(The capital/small letters or their combination does not affect the command functionality).
+This bot offers five different functionalities, three of them are for getting the exchange rates for cryptocurrencies and fiat currencies, while the other two are for retrieving the currency symbols. Also note that all the commands are case-insensitive(The capital/small letters or their combination does not affect the command functionality).
 
 ### Getting Exchange Rate of a Cryptocurrency with another Fiat/Crypto Currency
 This feature can be accessed by the command **c2o**. Eg:
